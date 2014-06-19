@@ -67,7 +67,7 @@ svg.append('svg:circle')
     .attr("transform", function(d) {
         return "translate(" + projection([126,-33.8412203204768]) + ")";
     })
-    .attr('r', 20).style("fill", "red");
+    .attr('r', 20).style("fill", "red").style("opacity", "0.5");
 
 d3.json("data/ne_110m_land/world110.json", function(error, world) {
   svg.insert("path", ".graticule")
