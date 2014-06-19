@@ -88,3 +88,94 @@ GROUP BY rp1.value, rp2.value
 ORDER BY count desc
 LIMIT 10;
 
+
+
+   SELECT 
+     COUNT(*), ST_Transform(ST_Centroid(ST_Collect(request_bbox)), 3857)
+   FROM analytics
+   WHERE service_type='Earth Service:WMTS'
+   AND request_bbox is not null
+   GROUP BY ST_SnapToGrid(ST_Transform(request_bbox, 3857), 10, 10)
+   LIMIT 100;
+
+  SELECT 
+    COUNT(*), ST_SnapToGrid(ST_Transform(request_bbox, 3857), 10, 10) 
+  FROM analytics 
+   WHERE service_type='Earth Service:WMTS'
+   AND request_bbox is not null
+  GROUP BY ST_SnapToGrid(ST_Transform(request_bbox, 3857), 10, 10);
+
+SELECT ST_Centroid(request_bbox), count(*)
+FROM analytics
+WHERE service_type='Earth Service:WMTS'
+AND request_bbox is not null
+AND create_date > NOW() - '1 hours'::INTERVAL
+GROUP BY ST_Centroid(request_bbox);
+
+POINT(-90 -0)                            | 2164266547 --This is for a 0,0 tile
+ POINT(90 -0)                             | 2164266548
+ POINT(270 -0)                            | 2164266549
+ POINT(-90 -180)                          | 2164266550
+ POINT(90 -180)                           | 2164266551
+ POINT(270 -180)                          | 2164266552
+
+
+SELECT astext(ST_SnapToGrid(ST_Centroid(request_bbox), 10, 10)), count(*)
+FROM analytics an, request_parameter rp
+WHERE an.id = rp.analytics_id 
+AND an.service_type='Earth Service:WMTS'
+AND an.request_bbox is not null
+AND an.create_date > NOW() - '1 hours'::INTERVAL
+AND rp.name='TileMatrix'
+AND rp.value='EPSG:4326:11'
+GROUP BY ST_SnapToGrid(ST_Centroid(request_bbox), 10, 10);
+
+
+SELECT astext(ST_SnapToGrid(ST_Centroid(request_bbox), 0.1)), count(*)
+FROM analytics an, request_parameter rp
+WHERE an.id = rp.analytics_id 
+AND an.service_type='Earth Service:WMTS'
+AND an.request_bbox is not null
+AND an.create_date > NOW() - '1 hours'::INTERVAL
+AND rp.name='TileMatrix'
+AND rp.value='EPSG:4326:11'
+GROUP BY ST_SnapToGrid(ST_Centroid(request_bbox), 0.1);
+
+
+https://services-int.digitalglobe.com/earthservice/wmtsaccess?connectId=84260cdd-2b9d-4b00-bbf6-32b83aa182bd&dgToken=889656a2823ad63612d878ab316969d4f22b24e3d4e50f2d05ef80967d6aa0c4&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&TileMatrixSet=EPSG:3857&LAYER=DigitalGlobe:ImageryTileService&FORMAT=image/jpeg&STYLE=&featureProfile=Global_Currency_Profile&TileMatrix=EPSG:3857:14&TILEROW=8247&TILECOL=5984
+
+
+SELECT astext(ST_SnapToGrid(ST_Centroid(request_bbox), 0.1)), count(*)
+FROM analytics an, request_parameter rp
+WHERE an.id = rp.analytics_id 
+AND an.service_type='Earth Service:WMTS'
+AND an.request_bbox is not null
+AND an.create_date > NOW() - '1 hours'::INTERVAL
+AND rp.name='TileMatrixSet'
+AND rp.value='EPSG:3857'
+GROUP BY ST_SnapToGrid(ST_Centroid(request_bbox), 0.1);
+
+--Split up the world into 20 regions
+SELECT astext(ST_SnapToGrid(ST_Centroid(request_bbox), 360/20.0, 180/20.0)), count(*)
+FROM analytics an, request_parameter rp
+WHERE an.id = rp.analytics_id 
+AND an.service_type='Earth Service:WMTS'
+AND an.request_bbox is not null
+AND an.create_date > NOW() - '1 hours'::INTERVAL
+AND rp.name='TileMatrixSet'
+AND rp.value='EPSG:3857'
+GROUP BY ST_SnapToGrid(ST_Centroid(request_bbox), 360/20.0, 180/20.0);
+
+
+--Split up the world into 20 regions
+SELECT astext(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20)), count(*)
+FROM analytics an, request_parameter rp
+WHERE an.id = rp.analytics_id 
+AND an.service_type='Earth Service:WMTS'
+AND an.request_bbox is not null
+AND an.create_date > NOW() - '1 hours'::INTERVAL
+AND rp.name='TileMatrixSet'
+AND rp.value='EPSG:3857'
+GROUP BY ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20);
+
+

@@ -4,7 +4,7 @@
 
 .graticule {
   fill: none;
-  /*stroke: #777;*/
+  stroke: #777;
   stroke-opacity: .5;
   stroke-width: .5px;
 }
@@ -23,10 +23,14 @@
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="lib/tile.js"></script>
 <script>
 
 var width = 960,
     height = 960;
+
+var tile = d3.geo.tile()
+    .size([width, height]);
 
 var projection = d3.geo.mercator()
     .scale((width + 1) / 2 / Math.PI)
@@ -47,20 +51,43 @@ svg.append("path")
     .attr("class", "graticule")
     .attr("d", path);
 
-//d3.json("data/ne_110m_land/world110.json", function(error, world) {
-//  svg.insert("path", ".graticule")
-//      .datum(topojson.feature(world, world.objects.ne_110m_land))
-//      .attr("class", "land")
-//      .attr("d", path);
-//
-//      console.log(world.objects.ne_110m_land);
+svg.append('svg:circle')
+    .attr("transform", function(d) {
+        return "translate(" + projection([0,0]) + ")";
+    })
+    .attr('r', 5).style("fill", "red");
 
-d3.json("data/z5grid/topo_json.json", function(error, world) {
+svg.append('svg:circle')
+    .attr("transform", function(d) {
+        return "translate(" + projection([180,0]) + ")";
+    })
+    .attr('r', 20).style("fill", "red");
+
+svg.append('svg:circle')
+    .attr("transform", function(d) {
+        return "translate(" + projection([126,-33.8412203204768]) + ")";
+    })
+    .attr('r', 20).style("fill", "red");
+
+d3.json("data/ne_110m_land/world110.json", function(error, world) {
   svg.insert("path", ".graticule")
-      .datum(topojson.feature(world, world.objects.geo_json))
+      .datum(topojson.feature(world, world.objects.ne_110m_land))
       .attr("class", "land")
       .attr("d", path);
 
+      //console.log(world.objects.ne_110m_land);
+
+//d3.json("data/z5/z5grid.json", function(error, world) {
+//  svg.insert("path", ".graticule")
+//      .datum(topojson.feature(world, world.objects.geojsongrid))
+//      .attr("class", "land")
+//      .attr("d", path).transition().duration(750).style("fill", function(d, i) {return "hsl(" + Math.random() * 360 + ",100%,50%)"});
+
+//  svg.insert("path", ".graticule")
+//      .datum(topojson.mesh(world, world.objects.geojsongrid, function(a, b) { return a !== b; }))
+//      .attr("class", "boundary")
+//      .attr("d", path);
+//
 //  svg.insert("path", ".graticule")
 //      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
 //      .attr("class", "boundary")
