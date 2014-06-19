@@ -1,0 +1,90 @@
+SELECT * FROM analytics an, request_parameter rp
+WHERE an.id = rp.analytics_id
+AND an.service_type='Earth Service:WMTS'
+--AND rp.name='TileCol'
+ORDER BY an.create_date desc
+LIMIT 1000;
+
+
+SELECT * FROM analytics an, request_parameter rp1, request_parameter rp2, request_parameter rp3
+WHERE an.id = rp1.analytics_id
+AND an.id = rp2.analytics_id
+AND an.id = rp3.analytics_id
+AND an.service_type='Earth Service:WMTS'
+AND rp1.name='TileCol'
+AND rp2.name='TileRow'
+AND rp3.name ='EPSG:4326:9'
+ORDER BY an.create_date desc
+LIMIT 1000;
+
+SELECT rp1.value as TileCol, rp2.value as TileRow, count(*) 
+FROM analytics an, request_parameter rp1, request_parameter rp2, request_parameter rp3
+WHERE an.id = rp1.analytics_id
+AND an.id = rp2.analytics_id
+AND an.id = rp3.analytics_id
+AND an.service_type='Earth Service:WMTS'
+AND rp1.name='TileCol'
+AND rp2.name='TileRow'
+AND rp3.value ='EPSG:4326:9'
+AND an.create_date >= NOW() - '8 HOURS'::INTERVAL
+GROUP BY rp1.value, rp2.value;
+
+SELECT rp1.value as TileCol, rp2.value as TileRow, count(*) 
+FROM analytics an, request_parameter rp1, request_parameter rp2, request_parameter rp3
+WHERE an.id = rp1.analytics_id
+AND an.id = rp2.analytics_id
+AND an.id = rp3.analytics_id
+AND an.service_type='Earth Service:WMTS'
+AND rp1.name='TileCol'
+AND rp2.name='TileRow'
+AND rp3.value ='EPSG:3857:11'
+AND an.create_date >= NOW() - '8 HOURS'::INTERVAL
+GROUP BY rp1.value, rp2.value;
+
+https://services-int.digitalglobe.com/earthservice/wmtsaccess?connectId=84260cdd-2b9d-4b00-bbf6-32b83aa182bd&dgToken=87110da714d99596a7e16422a030b293cbbef7fbf82566eedaad4a7e3ac4e40b&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&TileMatrixSet=EPSG:3857&LAYER=DigitalGlobe:ImageryTileService&FORMAT=image/jpeg&STYLE=&featureProfile=Global_Currency_Profile&TileMatrix=EPSG:3857:11&TILEROW=691&TILECOL=1091
+
+SELECT rp1.value as TileCol, rp2.value as TileRow, count(*) 
+FROM analytics an, request_parameter rp1, request_parameter rp2, request_parameter rp3
+WHERE an.id = rp1.analytics_id
+AND an.id = rp2.analytics_id
+AND an.id = rp3.analytics_id
+AND an.service_type='Earth Service:WMTS'
+AND rp1.name='TILECOL'
+AND rp2.name='TILEROW'
+AND rp3.value ='EPSG:3857:11'
+AND an.create_date >= NOW() - '.8 HOURS'::INTERVAL
+GROUP BY rp1.value, rp2.value;
+
+select count(*) from analytics an, request_parameter rp 
+where an.id=rp.analytics_id
+AND an.create_date >= NOW() - '23 HOURS'::INTERVAL;
+
+SELECT rp1.value as TileCol, rp2.value as TileRow, count(*) 
+FROM analytics an, request_parameter rp1, request_parameter rp2, request_parameter rp3
+WHERE an.id = rp1.analytics_id
+AND an.id = rp2.analytics_id
+AND an.id = rp3.analytics_id
+AND an.service_type='Earth Service:WMTS'
+AND rp1.name='TILECOL'
+AND rp2.name='TILEROW'
+AND rp3.value ='EPSG:3857:11'
+AND an.create_date >= NOW() - '.8 HOURS'::INTERVAL
+GROUP BY rp1.value, rp2.value
+ORDER BY count
+LIMIT 10;
+
+
+SELECT rp1.value as TileCol, rp2.value as TileRow, count(*) 
+FROM analytics an, request_parameter rp1, request_parameter rp2, request_parameter rp3
+WHERE an.create_date >= NOW() - '.8 HOURS'::INTERVAL
+AND an.id = rp1.analytics_id
+AND an.id = rp2.analytics_id
+AND an.id = rp3.analytics_id
+AND an.service_type='Earth Service:WMTS'
+AND rp1.name='TILECOL'
+AND rp2.name='TILEROW'
+AND rp3.value ='EPSG:3857:11'
+GROUP BY rp1.value, rp2.value
+ORDER BY count desc
+LIMIT 10;
+

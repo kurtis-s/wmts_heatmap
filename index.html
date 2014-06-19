@@ -4,7 +4,7 @@
 
 .graticule {
   fill: none;
-  stroke: #777;
+  /*stroke: #777;*/
   stroke-opacity: .5;
   stroke-width: .5px;
 }
@@ -47,16 +47,24 @@ svg.append("path")
     .attr("class", "graticule")
     .attr("d", path);
 
-d3.json("data/world-50m.json", function(error, world) {
+//d3.json("data/ne_110m_land/world110.json", function(error, world) {
+//  svg.insert("path", ".graticule")
+//      .datum(topojson.feature(world, world.objects.ne_110m_land))
+//      .attr("class", "land")
+//      .attr("d", path);
+//
+//      console.log(world.objects.ne_110m_land);
+
+d3.json("data/z5grid/topo_json.json", function(error, world) {
   svg.insert("path", ".graticule")
-      .datum(topojson.feature(world, world.objects.land))
+      .datum(topojson.feature(world, world.objects.geo_json))
       .attr("class", "land")
       .attr("d", path);
 
-  svg.insert("path", ".graticule")
-      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
-      .attr("class", "boundary")
-      .attr("d", path);
+//  svg.insert("path", ".graticule")
+//      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+//      .attr("class", "boundary")
+//      .attr("d", path);
 });
 
 d3.select(self.frameElement).style("height", height + "px");
