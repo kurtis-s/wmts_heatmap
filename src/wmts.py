@@ -1,17 +1,17 @@
 import config
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import psycopg2
 app = Flask(__name__)
 
-USAGE_QUERY='''SELECT astext(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20)), count(*)
+USAGE_QUERY='''SELECT astext(ST_Transform(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20), 4326)), count(*)
 FROM analytics an, request_parameter rp
-WHERE an.id = rp.analytics_id
+WHERE an.id = rp.analytics_id 
 AND an.service_type='Earth Service:WMTS'
 AND an.request_bbox is not null
 AND an.create_date > NOW() - '1 hours'::INTERVAL
 AND rp.name='TileMatrixSet'
 AND rp.value='EPSG:3857'
-GROUP BY ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20);
+GROUP BY ST_Transform(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20), 4326);
 '''
 
 def query_db():
@@ -43,9 +43,13 @@ def usage_stats():
                                 'count': count}})
     return {'points': points}
 
-@app.route('/')
+@app.route('/wmts_usage')
 def usage_stats_by_region():
     return jsonify(usage_stats())
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__=='__main__':
     app.debug = True
