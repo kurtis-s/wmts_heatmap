@@ -3,7 +3,7 @@ from flask import Flask, jsonify, render_template
 import psycopg2
 app = Flask(__name__)
 
-USAGE_QUERY='''SELECT astext(ST_Transform(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20), 4326)), count(*)
+USAGE_QUERY='''SELECT astext(ST_Transform(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/200, (20037508.342789244*2)/200), 4326)), count(*)
 FROM analytics an, request_parameter rp
 WHERE an.id = rp.analytics_id 
 AND an.service_type='Earth Service:WMTS'
@@ -11,7 +11,7 @@ AND an.request_bbox is not null
 AND an.create_date > NOW() - '1 hours'::INTERVAL
 AND rp.name='TileMatrixSet'
 AND rp.value='EPSG:3857'
-GROUP BY ST_Transform(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/20, (20037508.342789244*2)/20), 4326);
+GROUP BY ST_Transform(ST_SnapToGrid(ST_Centroid(ST_Transform(request_bbox, 3857)), (20037508.342789244*2)/200, (20037508.342789244*2)/200), 4326);
 '''
 
 def query_db():
