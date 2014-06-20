@@ -1,5 +1,5 @@
 import config
-from flask import Flask, json
+from flask import Flask, jsonify
 import psycopg2
 app = Flask(__name__)
 
@@ -31,7 +31,7 @@ def parse_usage_query(record):
     count = record[1]
     coordinate_string = str.rstrip(str.lstrip( record[0], 'POINT(' ), ')')
     longitude, latitude = coordinate_string.split()
-    return count, longitude, latitude
+    return count, float(longitude), float(latitude)
 
 def usage_stats():
     points = [] 
@@ -45,7 +45,7 @@ def usage_stats():
 
 @app.route('/')
 def usage_stats_by_region():
-    return json.dumps(usage_stats())
+    return jsonify(usage_stats())
 
 if __name__=='__main__':
     app.debug = True
